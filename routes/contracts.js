@@ -1,15 +1,25 @@
 const express = require('express'),
       router = express.Router(),
-      bmf = require('bmf-trading-settlements');;
+      bmf = require('bmf-trading-settlements');
 
-router.get('/:contract', function(req, res, next) {
-  bmf(req.params.contract).then((data) => {
+function sendData(res, promise) {
+  promise.then((data) => {
     res.status(200).send(data);
   }).catch(err => {
     res.status(500).send({
       err: err
     });
   });
+}
+
+router.get('/', function(req, res, next) {
+  const promise = bmf();
+  sendData(res, promise);
+});
+
+router.get('/:contract', function(req, res, next) {
+  const promise = bmf(req.params.contract);
+  sendData(res, promise);
 });
 
 module.exports = router;
